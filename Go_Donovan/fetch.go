@@ -44,11 +44,11 @@ func getPages(a []string) [1024][]byte {
 	return ans
 }
 
-func crawler(html_page []byte) [1024][1024] byte {
+func extract_urls(html_page []byte) [1024][] byte {
 	
 	search_str := []byte("https://")
 
-	var urls [1024][1024]byte
+	var urls [1024][]byte
 
 	i := 0
 
@@ -63,7 +63,7 @@ func crawler(html_page []byte) [1024][1024] byte {
 		
 		for html_page[i] != 0x22 {
 			
-			urls[url_index][url_offset] = html_page[i]
+			urls[url_index] = append(urls[url_index],html_page[i])
 			
 			url_offset++
 
@@ -86,27 +86,22 @@ func crawler(html_page []byte) [1024][1024] byte {
 func main() {
 	
 
-//	i := 0 
 
 	c := getPages(os.Args)
+	
 
-/*
-	for c[i] != nil {
-		fmt.Printf("%s\n",c[i])
+	url_list := extract_urls(c[0])
+
+//	j := 0
+
+	for i := range url_list {
+		
+		fmt.Printf("%s\n",url_list[i])
+
 		i++
-	}
-*/
 
-	url_list := crawler(c[0])
-
-	i := 0
-
-	for url_list[0][i] != 0x0 {
-		fmt.Printf("%c",url_list[0][i])
-		i++
 	}
 
-	fmt.Printf("%c",0xa)
 
 
 }
