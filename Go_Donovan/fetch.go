@@ -11,8 +11,32 @@ import (
 	"bytes"
 )
 
+func getPage(a string)  []byte {
+	
+	resp, err := http.Get(a)
 
-func getPages(a []string) [1024][]byte {
+	if err != nil {
+		
+		fmt.Fprintf(os.Stderr,"fetch: %v\n",err)
+		
+		os.Exit(1)
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	
+	resp.Body.Close()
+
+	if err != nil {
+		
+		fmt.Fprintf(os.Stderr,"fetch: reading HTML contents: %v\n",err)
+		os.Exit(1)
+	}
+
+	return b
+
+}
+
+func getPages(a string) [1024][]byte {
 
 	i := 0 
 
@@ -83,16 +107,18 @@ func extract_urls(html_page []byte) [1024][] byte {
 func main() {
 	
 
-	var c [1024][]byte 
+	var c []byte 
 	
-	c = getPages(os.Args)
-
-	url_list := extract_urls(c[0])
+	c = getPage(os.Args[1])
+	
+	var url_list [1024][] byte
+	
+	url_list = extract_urls(c)
 
 	i := 0
 
 	for i < 1024 {
-		
+	
 		fmt.Printf("%s\n",url_list[i])
 
 		i++
@@ -100,5 +126,5 @@ func main() {
 	}
 
 
-
 }
+
