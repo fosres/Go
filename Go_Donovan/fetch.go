@@ -44,6 +44,7 @@ func getPages(a []string) [1024][]byte {
 	return ans
 }
 
+
 func extract_urls(html_page []byte) [1024][] byte {
 	
 	search_str := []byte("https://")
@@ -56,10 +57,11 @@ func extract_urls(html_page []byte) [1024][] byte {
 	
 	len_html_page := len(html_page)
 
-	for ( i < len_html_page && (url_index < 1024) ) {
-		
-		i = bytes.Index(html_page[i:],search_str)
-		
+
+	for ( (i < len_html_page) && (url_index < 1024) ) {
+
+		i = bytes.Index(html_page[i:],search_str) + i
+
 		for html_page[i] != 0x22 {
 			
 			urls[url_index] = append(urls[url_index],html_page[i])
@@ -70,7 +72,7 @@ func extract_urls(html_page []byte) [1024][] byte {
 		url_index++
 
 		i++
-
+		
 	}
 
 	return urls
@@ -84,8 +86,6 @@ func main() {
 	var c [1024][]byte 
 	
 	c = getPages(os.Args)
-	
-	fmt.Printf("%s\n",c[0])
 
 	url_list := extract_urls(c[0])
 
