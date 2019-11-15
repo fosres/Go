@@ -34,7 +34,7 @@ func getPages(a []string) [1024][]byte {
 			fmt.Fprintf(os.Stderr,"fetch: reading %s: %v\n",url,err)
 			os.Exit(1)
 		}
-
+		
 		ans[i] = b
 
 		i++
@@ -53,26 +53,21 @@ func extract_urls(html_page []byte) [1024][] byte {
 	i := 0
 
 	url_index := 0
+	
+	len_html_page := len(html_page)
 
-	url_offset := 0	
-
-
-	for (i < len(html_page)) && (url_index < 1024) {
+	for ( i < len_html_page && (url_index < 1024) ) {
 		
-		i = bytes.Index(html_page,search_str)
+		i = bytes.Index(html_page[i:],search_str)
 		
 		for html_page[i] != 0x22 {
 			
 			urls[url_index] = append(urls[url_index],html_page[i])
 			
-			url_offset++
-
 			i++
 		}
 
 		url_index++
-
-		url_offset = 0
 
 		i++
 
@@ -86,15 +81,17 @@ func extract_urls(html_page []byte) [1024][] byte {
 func main() {
 	
 
-
-	c := getPages(os.Args)
+	var c [1024][]byte 
 	
+	c = getPages(os.Args)
+	
+	fmt.Printf("%s\n",c[0])
 
 	url_list := extract_urls(c[0])
 
-//	j := 0
+	i := 0
 
-	for i := range url_list {
+	for i < 1024 {
 		
 		fmt.Printf("%s\n",url_list[i])
 
