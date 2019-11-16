@@ -75,11 +75,12 @@ func extract_urls(html_page []byte) [1024][] byte {
 
 func crawler(url string) {
 	
-
 	var c []byte 
 	
 	c = getPage(url)
 	
+	fmt.Printf("%s\n",c)
+
 	if c == nil {
 		return 
 	}
@@ -90,7 +91,7 @@ func crawler(url string) {
 
 	i := 0
 
-	for i < len(url_list) {
+	for (i < len(url_list)) && (url_list[i] != nil) {
 	
 		fmt.Printf("%s\n",url_list[i])
 
@@ -100,12 +101,13 @@ func crawler(url string) {
 	
 	i = 0
 	
-	for i < len(url_list) {
+	for (i < len(url_list)) && (url_list[i] != nil) {
 		
 		crawler(string(url_list[i]))
 	}
 
 }
+//Problem: We need to get the computer to detect if the URL leads to an HTML file
 
 func main() {
 	
