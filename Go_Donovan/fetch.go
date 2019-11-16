@@ -55,6 +55,10 @@ func extract_urls(html_page []byte) [1024][] byte {
 
 		i = bytes.Index(html_page[i:],search_str) + i
 
+		if (i < 0) {
+			break
+		}
+
 		for html_page[i] != 0x22 {
 			
 			urls[url_index] = append(urls[url_index],html_page[i])
@@ -78,8 +82,6 @@ func crawler(url string) {
 	var c []byte 
 	
 	c = getPage(url)
-	
-	fmt.Printf("%s\n",c)
 
 	if c == nil {
 		return 
@@ -104,6 +106,8 @@ func crawler(url string) {
 	for (i < len(url_list)) && (url_list[i] != nil) {
 		
 		crawler(string(url_list[i]))
+
+		i++
 	}
 
 }
