@@ -19,7 +19,7 @@ func getPage(a string)  []byte {
 		
 		fmt.Fprintf(os.Stderr,"fetch: %v\n",err)
 		
-		os.Exit(1)
+		return nil
 	}
 
 	b, err := ioutil.ReadAll(resp.Body)
@@ -29,43 +29,12 @@ func getPage(a string)  []byte {
 	if err != nil {
 		
 		fmt.Fprintf(os.Stderr,"fetch: reading HTML contents: %v\n",err)
-		os.Exit(1)
+		
+		return nil
 	}
 
 	return b
 
-}
-
-func getPages(a string) [1024][]byte {
-
-	i := 0 
-
-	var ans [1024][]byte
-
-	for _, url := range os.Args[1:] {
-		resp, err := http.Get(url)
-
-		if err != nil {
-			fmt.Fprintf(os.Stderr,"fetch: %v\n",err)
-			os.Exit(1)
-		}
-
-		b, err := ioutil.ReadAll(resp.Body)
-
-		resp.Body.Close()
-
-		if err != nil {
-			fmt.Fprintf(os.Stderr,"fetch: reading %s: %v\n",url,err)
-			os.Exit(1)
-		}
-		
-		ans[i] = b
-
-		i++
-		
-	}
-	
-	return ans
 }
 
 
@@ -104,12 +73,16 @@ func extract_urls(html_page []byte) [1024][] byte {
 	
 }
 
-func main() {
+func crawler(url string) {
 	
 
 	var c []byte 
 	
-	c = getPage(os.Args[1])
+	c = getPage(url)
+	
+	if c == nil {
+		return 
+	}
 	
 	var url_list [1024][] byte
 	
@@ -117,14 +90,25 @@ func main() {
 
 	i := 0
 
-	for i < 1024 {
+	for i < len(url_list) {
 	
 		fmt.Printf("%s\n",url_list[i])
 
 		i++
 
 	}
+	
+	i = 0
+	
+	for i < len(url_list) {
+		
+		crawler(string(url_list[i]))
+	}
 
+}
 
+func main() {
+	
+	crawler(os.Args[1])
 }
 
