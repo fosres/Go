@@ -90,9 +90,16 @@ func extract_urls(html_page []byte) [1024][] byte {
 
 		urls[url_index] = append(urls[url_index],[]byte("https:")...)
 
+
 		for html_page[i] != 0x22 {
 
-			
+			i++
+		}
+
+		i++
+
+		for html_page[i] != 0x22 {
+
 			urls[url_index] = append(urls[url_index],html_page[i])
 			
 			i++
@@ -104,6 +111,8 @@ func extract_urls(html_page []byte) [1024][] byte {
 		
 	}
 
+	i = 0
+
 	for ( (i < len_html_page) && (url_index < 1024) ) {
 
 		i = bytes.Index(html_page[i:],search_sub_domain) + i
@@ -113,14 +122,15 @@ func extract_urls(html_page []byte) [1024][] byte {
 			break
 		}
 
-		if ( bytes.Equal( html_page[i+7:i+8],[]byte("/") ) ) {
+		for html_page[i] != 0x22 {
 			
-			for html_page[i] != 0x22 {
-				
-				i++
-			}
-
 			i++
+		}
+
+		i++
+
+		if ( bytes.Equal( html_page[i+1:i+2],[]byte("/") ) ) {
+			
 
 			continue
 		}
@@ -141,6 +151,7 @@ func extract_urls(html_page []byte) [1024][] byte {
 		i++
 		
 	}
+	
 	i = 0
 	
 	return urls
