@@ -42,6 +42,10 @@ func extract_urls(html_page []byte) [1024][] byte {
 	
 	search_str := []byte("https://")
 
+	search_sub_domain := []byte("href=\"/")
+
+	search_dif_domain := []byte("href=\"//")
+
 	var urls [1024][]byte
 
 	i := 0
@@ -56,6 +60,7 @@ func extract_urls(html_page []byte) [1024][] byte {
 		i = bytes.Index(html_page[i:],search_str) + i
 
 		if (i < 0) {
+			
 			break
 		}
 
@@ -72,6 +77,72 @@ func extract_urls(html_page []byte) [1024][] byte {
 		
 	}
 
+	i = 0
+
+	for ( (i < len_html_page) && (url_index < 1024) ) {
+
+		i = bytes.Index(html_page[i:],search_dif_domain) + i
+
+		if (i < 0) {
+			
+			break
+		}
+
+		urls[url_index] = append(urls[url_index],[]byte("https:")...)
+
+		for html_page[i] != 0x22 {
+
+			
+			urls[url_index] = append(urls[url_index],html_page[i])
+			
+			i++
+		}
+
+		url_index++
+
+		i++
+		
+	}
+
+	for ( (i < len_html_page) && (url_index < 1024) ) {
+
+		i = bytes.Index(html_page[i:],search_sub_domain) + i
+
+		if (i < 0) {
+			
+			break
+		}
+
+		if ( bytes.Equal( html_page[i+7:i+8],[]byte("/") ) ) {
+			
+			for html_page[i] != 0x22 {
+				
+				i++
+			}
+
+			i++
+
+			continue
+		}
+
+
+		urls[url_index] = append(urls[url_index],[]byte(os.Args[1])...)
+
+		for html_page[i] != 0x22 {
+
+			
+			urls[url_index] = append(urls[url_index],html_page[i])
+			
+			i++
+		}
+
+		url_index++
+
+		i++
+		
+	}
+	i = 0
+	
 	return urls
 	
 	
@@ -86,7 +157,7 @@ func crawler(url string) {
 	if c == nil {
 		return 
 	}
-	
+
 	var url_list [1024][] byte
 	
 	url_list = extract_urls(c)
@@ -111,6 +182,8 @@ func crawler(url string) {
 	}
 
 }
+
+
 //Problem: We need to get the computer to detect if the URL leads to an HTML file
 
 func main() {
